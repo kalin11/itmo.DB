@@ -1,72 +1,67 @@
-CREATE TABLE IF NOT EXISTS landmark (
-                                        id serial primary key not null,
-                                        name varchar(255) not null check ( length(name) > 0 ),
-                                        country varchar(255) not null check ( length(country) > 0 ),
-                                        rating int not null check ( rating >= 0 and rating <= 5 ),
-                                        link text
+create table if not exists colors (
+                                      id serial primary key not null,
+                                      color varchar(255) unique not null check ( length(color) > 0 )
 );
 
-CREATE TABLE IF NOT EXISTS colors (
-    id serial primary key not null,
-    color varchar(255) not null
+create table if not exists passports (
+                                         id serial primary key not null,
+                                         series int not null unique,
+                                         number int not null unique,
+                                         country varchar(255) not null
 );
 
-CREATE TABLE IF NOT EXISTS human (
+create table if not exists humans (
+                                      id serial primary key not null,
+                                      name varchar(255) not null check ( length(name) > 0 ),
+                                      surname varchar(255) not null check ( length(name) > 0 ),
+                                      age int not null check ( age > 0 ),
+                                      eyes_color int references colors(id) not null ,
+                                      passport_id int references passports(id) not null unique
+);
+
+create table if not exists locations (
+                                         id serial primary key not null,
+                                         X double precision not null,
+                                         Y double precision not null,
+                                         Z double precision not null,
+                                         availability bool
+);
+
+create table if not exists location_visits (
+                                               human_id int references humans(id) not null ,
+                                               location_id int references locations(id) not null ,
+                                               was_visited bool not null
+);
+
+
+create table if not exists landmarks (
+                                         id serial primary key not null,
+                                         name varchar(255) not null,
+                                         country varchar(255) not null,
+                                         rating int not null check ( rating >= 1 and rating <= 5 ),
+                                         description text,
+                                         location_id int not null references locations(id)
+);
+
+create table if not exists mountains (
+                                         id serial primary key not null,
+                                         name varchar(255) not null check ( length(name) > 0 ),
+                                         description text,
+                                         location_id int not null references locations(id)
+);
+
+
+create table if not exists caves (
                                      id serial primary key not null,
-                                     name varchar(255) not null check ( length(name) > 0 ),
-                                     surname varchar(255) not null check ( length(surname) > 0 ),
-                                     age int not null check ( age >= 0 and age <= 120),
-                                     eyes_color int not null,
-                                     foreign key (eyes_color) references colors(id)
+                                     name varchar(255) unique not null check ( length(name) > 0 ),
+                                     description text,
+                                     mountain_id int not null references mountains(id),
+                                     location_id int not null references locations(id)
 );
 
-CREATE TABLE IF NOT EXISTS human_landmark (
-                                              human_id int not null,
-                                              landmark_id int not null,
-                                              foreign key (human_id) references human(id),
-                                              foreign key (landmark_id) references landmark(id),
-                                              unique (human_id, landmark_id)
-);
-
-CREATE TABLE IF NOT EXISTS mountain (
-                                        id serial primary key not null,
-                                        name varchar(255) not null check ( length(name) > 0 ),
-                                        X double precision not null,
-                                        Y double precision not null,
-                                        Z double precision not null
-
-);
-
-CREATE TABLE IF NOT EXISTS cave (
-                                    id serial primary key not null,
-                                    X double precision not null,
-                                    Y double precision not null,
-                                    Z double precision not null,
-                                    availability bool
-);
-
-CREATE TABLE IF NOT EXISTS road (
-                                    id serial primary key not null,
-                                    length int not null,
-                                    condition int not null check ( condition >= 0 and condition <= 5),
-                                    cave_id int,
-                                    foreign key (cave_id) references cave(id)
-);
-
-CREATE TABLE IF NOT EXISTS cave_visits (
-                                           human_id int not null,
-                                           cave_id int not null,
-                                           was_visited bool,
-                                           foreign key (human_id) references human(id),
-                                           foreign key (cave_id) references cave(id),
-                                           unique (human_id, cave_id)
-);
-
-CREATE TABLE IF NOT EXISTS cave_in_mountain (
-                                                mountain_id int not null,
-                                                cave_id int not null,
-                                                cave_in_mountain bool,
-                                                foreign key (mountain_id) references mountain(id),
-                                                foreign key (cave_id) references cave(id),
-                                                unique (mountain_id, cave_id)
+create table if not exists roads (
+                                     id serial not null,
+                                     length int not null check ( length > 0 ),
+                                     condition int not null check ( condition >= 1 and condition <= 5 ),
+                                     cave_id int not null references caves(id)
 );

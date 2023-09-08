@@ -1,8 +1,9 @@
-drop table if exists cave_in_mountain;
-drop table if exists cave_visits;
-drop table if exists road;
-drop table if exists cave;
-drop table if exists mountain;
-drop table if exists human_landmark;
-drop table if exists human;
-drop table if exists landmark;
+drop table if exists roads;
+drop table if exists caves;
+drop table if exists mountains;
+drop table if exists landmarks;
+drop table if exists location_visits;
+drop table if exists locations;
+drop table if exists humans;
+drop table if exists passports;
+drop table if exists colors;
